@@ -6,9 +6,6 @@ b,lastresponse = "hi",""
 
 # chat loop
 while True:
-  # prints out the response
-  print(b)
-  
   # loads the data
   with open("data.json", "r") as f:
     data = json.load(f)
@@ -20,7 +17,7 @@ while True:
 
   # finds the most similar sentence to the user input from the data
   for d in data:
-    if (s := fuzz.ratio(userInput,d)):
+    if (s := fuzz.ratio(userInput,d)) > score:
       mostsimilar,score = d,s
   if userInput != b:
     # adds new responses to data
@@ -34,13 +31,15 @@ while True:
     json.dump(data,f,indent=4)
 
   # creates the response 
-  
-  if userInput in data:
-    b = data[userInput][random.randint(0,len(data[userInput])-1)]
+  if score != 0:
+    b = data[mostsimilar][random.randint(0,len(data[mostsimilar])-1)]
   else:
-    b = "I don't understand what you are saying"
+    b = "i don't understand what you are saying"
   # checks if it is going to repeat itself
   if lastresponse == b:
     b = random.choice(list(data))
-    
+
   lastresponse = b
+  
+  # prints out the response
+  print(f"{b} | Certainty: {score}%")
